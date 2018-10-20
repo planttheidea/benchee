@@ -1,5 +1,3 @@
-.babelrc
-.eslintrc
 .flowconfig
 .gitignore
 .idea
@@ -11,9 +9,10 @@ docs
 img
 node_modules
 src
-test
 webpack
 jsdoc.config.json
 rollup.config.js
-yarn-error.log
-yarn.lock
+tsconfig.json
+tslint.json
+*.log
+*.lock
