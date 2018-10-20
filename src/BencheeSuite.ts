@@ -164,7 +164,7 @@ class BencheeSuite {
     const { results, isRunning, tests } = this;
 
     if (isRunning) {
-      return;
+      throw new Error('Benchee is already running.');
     }
 
     this.isRunning = true;
