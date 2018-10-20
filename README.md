@@ -7,6 +7,7 @@ Simple benchmarks in both node and browser
 - [Requirements](#requirements)
 - [Usage](#usage)
 - [Benchmark groups](#benchmark-groups)
+- [Statistics](#statistics)
 - [Options](#options)
   - [delay](#delay)
   - [minIterations](#miniterations)
@@ -133,6 +134,27 @@ createSuite()
   ]
 }
 */
+```
+
+## Statistics
+
+Statistics for each benchmark have the following shape:
+
+```javascript
+{
+  // time of total benchmark run
+  elapsed: number;
+  // timestamp of benchmark complete
+  endTime: number;
+  // number of operations executed in benchmark
+  iterations: number;
+  // operations per second calculation
+  ops: number;
+  // time per execution calculation
+  tpe: number;
+  // timestamp of benchmark start
+  startTime: number;
+}
 ```
 
 ## Options
