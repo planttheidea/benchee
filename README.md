@@ -4,6 +4,23 @@ Simple benchmarks in both node and browser
 
 ## Table of contents
 
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Benchmark groups](#benchmark-groups)
+- [Options](#options)
+  - [delay](#delay)
+  - [minIterations](#miniterations)
+  - [minTime](#mintime)
+  - [onComplete](#oncomplete)
+  - [onGroupComplete](#ongroupcomplete)
+  - [onGroupStart](#ongroupstart)
+  - [onResult](#onresult)
+  - [type](#type)
+- [Support](#support)
+  - [Browser](#browser)
+  - [Node](#node)
+- [Development](#development)
+
 ## Requirements
 
 `benchee` requires that `Promise` is available globally. If using an environment that does not support it, you should polyfill prior to importing `benchee`.
@@ -71,7 +88,7 @@ createSuite()
 */
 ```
 
-The contract is `Promise`-based, however you can also access the resulting data in a [callback format](#oncomplete).
+The results contract is `Promise`-based, however you can also access the results in a [callback format](#oncomplete) if preferred.
 
 ## Benchmark groups
 
