@@ -2,6 +2,7 @@
 const Table = require('cli-table2');
 
 // src
+// import { createSuite, test } from '../dist/benchee';
 import { createSuite, test } from '../src';
 
 const getResults = (results: Benchee.Result[]): string => {

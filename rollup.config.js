@@ -16,13 +16,13 @@ export default [
       sourcemap: true
     },
     plugins: [
+      typescript(),
       resolve({
         jsnext: true,
         main: true,
         browser: true,
       }),
       commonjs(),
-      typescript()
     ]
   },
   {
@@ -34,14 +34,14 @@ export default [
       format: 'umd'
     },
     plugins: [
+      typescript(),
       resolve({
         jsnext: true,
         main: true,
         browser: true,
       }),
       commonjs(),
-      typescript(),
-      uglify()
+      uglify(),
     ]
   }
 ];

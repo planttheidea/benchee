@@ -4,7 +4,7 @@ import performanceNow from 'performance-now';
 // utils
 import { createTest, getOptions, sortResults, wait } from './utils';
 
-class BencheeSuite {
+class BencheeSuite implements BencheeSuite {
   isRunning: boolean;
   options: Benchee.Options;
   results: Benchee.ResultGroup;
@@ -12,9 +12,7 @@ class BencheeSuite {
 
   constructor(passedOptions?: Benchee.Options) {
     this.isRunning = false;
-
     this.options = getOptions(passedOptions);
-
     this.results = {};
     this.tests = {};
   }

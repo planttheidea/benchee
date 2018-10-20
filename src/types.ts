@@ -53,4 +53,11 @@ declare namespace Benchee {
     startTime?: number;
     test: Test;
   }
+
+  export interface BencheeSuite {
+    isRunning: boolean;
+    options: Options;
+    results: ResultGroup;
+    tests: TestGroup;
+  }
 }

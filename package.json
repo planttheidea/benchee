@@ -47,8 +47,8 @@
   "scripts": {
     "benchmark": "npm run dist && NODE_ENV=production node ./benchmarks/index.js",
     "build": "NODE_ENV=production rollup -c",
-    "build:types": "cp src/types.ts index.d.ts",
-    "clean": "rimraf dist && rimraf index.d.ts",
+    "build:types": "cp src/types.ts dist/index.d.ts",
+    "clean": "rimraf dist",
     "dev": "NODE_ENV=development webpack-dev-server --colors --progress --config=webpack/webpack.config.js",
     "dist": "npm run clean && npm run build && npm run build:types",
     "lint": "NODE_ENV=test tslint 'src/*.ts'",
@@ -61,6 +61,6 @@
     "test:watch": "npm run test -- --watch"
   },
   "sideEffects": false,
-  "types": "index.d.ts",
+  "types": "dist/index.d.ts",
   "version": "1.0.0"
 }
