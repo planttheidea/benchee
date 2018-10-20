@@ -3,9 +3,6 @@
   "bugs": {
     "url": "https://github.com/planttheidea/benchee/issues"
   },
-  "dependencies": {
-    "performance-now": "^2.1.0"
-  },
   "description": "Simple benchmarks in both node and browser",
   "devDependencies": {
     "@types/jest": "^23.3.5",

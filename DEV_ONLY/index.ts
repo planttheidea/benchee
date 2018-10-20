@@ -2,8 +2,8 @@
 const Table = require('cli-table2');
 
 // src
-// import { createSuite, test } from '../dist/benchee';
-import { createSuite, test } from '../src';
+// import { benchmark, createSuite } from '../dist/benchee';
+import { benchmark, createSuite } from '../src';
 
 const getResults = (results: Benchee.Result[]): string => {
   const table = new Table({
@@ -20,15 +20,17 @@ const getResults = (results: Benchee.Result[]): string => {
 const sum = (a: number, b: number): number => a + b;
 
 const runBasicSuite = async () => {
-  const results = await test('basic sum', () => sum(1, 2));
+  const results = await benchmark('basic sum', () => sum(1, 2));
 
   console.log('basic sum results');
-  console.log(getResults([
-    {
-      name: 'sum',
-      stats: results.stats
-    }
-  ]));
+  console.log(
+    getResults([
+      {
+        name: 'sum',
+        stats: results.stats,
+      },
+    ]),
+  );
 };
 
 const smallObject = { foo: 'bar', bar: 'baz', baz: 'quz' };
@@ -43,11 +45,14 @@ interface LargeObject {
   [key: string]: number;
 }
 
-const largeObject = array.reduce((object: LargeObject, value: number, index: number): LargeObject => {
-  object[`key_${index}`] = value;
+const largeObject = array.reduce(
+  (object: LargeObject, value: number, index: number): LargeObject => {
+    object[`key_${index}`] = value;
 
-  return object;
-}, {});
+    return object;
+  },
+  {},
+);
 
 const runComplexSuite = async () => {
   const results = await createSuite({
@@ -56,14 +61,14 @@ const runComplexSuite = async () => {
     .add('for-in', 'small object', () => {
       const keys = [];
 
-      for (let key in smallObject) {
+      for (const key in smallObject) {
         keys.push(key);
       }
     })
     .add('for-in', 'large object', () => {
       const keys = [];
 
-      for (let key in largeObject) {
+      for (const key in largeObject) {
         keys.push(key);
       }
     })
@@ -75,7 +80,7 @@ const runComplexSuite = async () => {
     })
     .run();
 
-  for (let key in results) {
+  for (const key in results) {
     const group = results[key];
 
     console.log(`object compare results - ${key}`);
@@ -86,17 +91,17 @@ const runComplexSuite = async () => {
 const runSuites = async () => {
   await runBasicSuite();
   await runComplexSuite();
-}
+};
 
 runSuites();
 
-document.body.style.backgroundColor = "#1d1d1d";
-document.body.style.color = "#d5d5d5";
-document.body.style.margin = "0";
-document.body.style.padding = "0";
+document.body.style.backgroundColor = '#1d1d1d';
+document.body.style.color = '#d5d5d5';
+document.body.style.margin = '0';
+document.body.style.padding = '0';
 
-const div = document.createElement("div");
+const div = document.createElement('div');
 
-div.textContent = "Check the console for details.";
+div.textContent = 'Check the console for details.';
 
 document.body.appendChild(div);

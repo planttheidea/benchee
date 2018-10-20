@@ -1,5 +1,5 @@
 // src
-import { createSuite, test as createTest } from '../index';
+import { benchmark, createSuite } from '../index';
 import BencheeSuite from '../BencheeSuite';
 
 describe('createSuite', () => {
@@ -10,12 +10,12 @@ describe('createSuite', () => {
   });
 });
 
-describe('test', () => {
-  it('should create a new suite with a single test, run it', async () => {
+describe('benchmark', () => {
+  it('should create a new suite with a single benchmark, run it', async () => {
     const name = 'name';
     const fn = jest.fn();
 
-    const result: Benchee.Result = await createTest(name, fn);
+    const result: Benchee.Result = await benchmark(name, fn);
 
     expect(result.name).toBe(name);
 

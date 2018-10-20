@@ -4,10 +4,7 @@
     "baseUrl": "src",
     "esModuleInterop": true,
     "jsx": "react",
-    "lib": [
-      "dom",
-      "es2015"
-    ],
+    "lib": ["dom", "es2015"],
     "module": "es2015",
     "moduleResolution": "node",
     "noImplicitAny": true,

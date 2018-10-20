@@ -1,13 +1,13 @@
 // src
 import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../constants';
-import { createTest, getOptions, sortResults, wait } from '../utils';
+import { createBenchmark, getOptions, sortResults, wait } from '../utils';
 
-describe('createTest', () => {
-  it('should create a test without a group assignment', () => {
+describe('createBenchmark', () => {
+  it('should create a benchmark without a group assignment', () => {
     const name: string = 'name';
-    const fn: Function = () => { };
+    const fn: Function = () => {};
 
-    const result: Benchee.Test = createTest(name, fn);
+    const result: Benchee.Benchmark = createBenchmark(name, fn);
 
     expect(result).toEqual({
       fn,
@@ -17,12 +17,12 @@ describe('createTest', () => {
     });
   });
 
-  it('should create a test with a group assignment', () => {
+  it('should create a benchmark with a group assignment', () => {
     const name: string = 'name';
     const group: string = 'group';
-    const fn: Function = () => { };
+    const fn: Function = () => {};
 
-    const result: Benchee.Test = createTest(name, group, fn);
+    const result: Benchee.Benchmark = createBenchmark(name, group, fn);
 
     expect(result).toEqual({
       fn,
@@ -35,13 +35,13 @@ describe('createTest', () => {
 
 describe('getOptions', () => {
   it('should get the merged options when passedOptions is an object', () => {
-    const passedOptions: Benchee.Options = { onComplete() { } };
+    const passedOptions: Benchee.Options = { onComplete() {} };
 
     const result: Benchee.Options = getOptions(passedOptions);
 
     expect(result).toEqual({
       ...DEFAULT_OPTIONS,
-      ...passedOptions
+      ...passedOptions,
     });
   });
 
@@ -66,7 +66,7 @@ describe('sortOptions', () => {
           ops: 0.5,
           startTime: 123456789000,
           tpe: 2,
-        }
+        },
       },
       {
         name: 'third',
@@ -77,7 +77,7 @@ describe('sortOptions', () => {
           ops: 0.25,
           startTime: 123456789000,
           tpe: 4,
-        }
+        },
       },
       {
         name: 'first',
@@ -88,7 +88,7 @@ describe('sortOptions', () => {
           ops: 2,
           startTime: 123456789000,
           tpe: 0.5,
-        }
+        },
       },
       {
         name: 'fourth',
@@ -99,7 +99,7 @@ describe('sortOptions', () => {
           ops: 0.25,
           startTime: 123456789000,
           tpe: 4,
-        }
+        },
       },
     ];
 
@@ -116,7 +116,7 @@ describe('sortOptions', () => {
           ops: 2,
           startTime: 123456789000,
           tpe: 0.5,
-        }
+        },
       },
       {
         name: 'second',
@@ -127,7 +127,7 @@ describe('sortOptions', () => {
           ops: 0.5,
           startTime: 123456789000,
           tpe: 2,
-        }
+        },
       },
       {
         name: 'third',
@@ -138,7 +138,7 @@ describe('sortOptions', () => {
           ops: 0.25,
           startTime: 123456789000,
           tpe: 4,
-        }
+        },
       },
       {
         name: 'fourth',
@@ -149,7 +149,7 @@ describe('sortOptions', () => {
           ops: 0.25,
           startTime: 123456789000,
           tpe: 4,
-        }
+        },
       },
     ]);
   });

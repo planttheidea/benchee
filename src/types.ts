@@ -1,20 +1,20 @@
 declare namespace Benchee {
-  export interface Defaults {
+  export interface DefaultOptions {
     delay?: number;
+    minIterations?: number;
     minTime?: number;
-    iterations?: number;
     type?: string;
   }
 
-  export interface Test {
+  export interface Benchmark {
     fn: Function;
     group: string;
     iterations: number;
     name: string;
   }
 
-  export interface TestGroup {
-    [key: string]: Test[];
+  export interface BenchmarkGroup {
+    [key: string]: Benchmark[];
   }
 
   export interface Stats {
@@ -31,33 +31,33 @@ declare namespace Benchee {
     stats: Stats;
   }
 
-  export interface ResultGroup {
-    [key: string]: Result[];
-  }
-
-  export interface GroupResults {
+  export interface ResultsGroup {
     group: string;
     results: Result[];
   }
 
-  export interface Options extends Defaults {
-    onComplete?: (results: ResultGroup) => void;
-    onGroupComplete?: (results: GroupResults) => void;
+  export interface Results {
+    [group: string]: Result[];
+  }
+
+  export interface Options extends DefaultOptions {
+    onComplete?: (results: Results) => void;
+    onGroupComplete?: (resultGroup: ResultsGroup) => void;
     onGroupStart?: (group: string) => void;
     onResult?: (result: Result) => void;
   }
 
-  export interface TestOptions {
+  export interface BenchmarkOptions {
+    benchmark: Benchmark;
     endTime?: number;
     iterations?: number;
     startTime?: number;
-    test: Test;
   }
 
   export interface BencheeSuite {
+    benchmarks: BenchmarkGroup;
     isRunning: boolean;
     options: Options;
-    results: ResultGroup;
-    tests: TestGroup;
+    results: Results;
   }
 }

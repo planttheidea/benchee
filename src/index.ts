@@ -9,12 +9,15 @@ export const createSuite = (passedOptions?: Benchee.Options): BencheeSuite =>
   new BencheeSuite(passedOptions);
 
 /**
- * test one thing standalone, outside of a given suite
+ * benchmark one thing standalone, outside of a given suite
  * @param name the name of the test
  * @param fn the test function
  */
-export const test = (name: string, fn: Function): Promise<Benchee.Result> =>
+export const benchmark = (
+  name: string,
+  fn: Function,
+): Promise<Benchee.Result> =>
   createSuite()
     .add(name, fn)
     .run()
-    .then((results: Benchee.ResultGroup) => results.ungrouped[0]);
+    .then((results: Benchee.Results) => results.ungrouped[0]);

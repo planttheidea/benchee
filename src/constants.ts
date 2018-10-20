@@ -1,10 +1,10 @@
 /**
  * @constant DEFAULT_OPTIONS the default options
  */
-export const DEFAULT_OPTIONS: Benchee.Defaults = {
+export const DEFAULT_OPTIONS: Benchee.DefaultOptions = {
   delay: 100,
+  minIterations: 10,
   minTime: 500,
-  iterations: 10,
   type: 'adaptive',
 };
 
