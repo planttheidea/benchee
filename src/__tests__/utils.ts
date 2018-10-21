@@ -1,6 +1,12 @@
 // src
 import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../constants';
-import { createBenchmark, getOptions, sortResults, wait } from '../utils';
+import {
+  createBenchmark,
+  getOptions,
+  mergeObjects,
+  sortResults,
+  wait,
+} from '../utils';
 
 describe('createBenchmark', () => {
   it('should create a benchmark without a group assignment', () => {
@@ -51,6 +57,30 @@ describe('getOptions', () => {
     const result = getOptions(passedOptions);
 
     expect(result).toEqual(DEFAULT_OPTIONS);
+  });
+});
+
+describe('mergeObjects', () => {
+  it('should merge the objects passed into a single new object', () => {
+    const object1 = { foo: 'bar' };
+    const object2 = { bar: 'baz' };
+    const object3 = Object.create({
+      fn() {},
+    });
+
+    object3.foo = 'quz';
+
+    const result: { [key: string]: any } = mergeObjects(
+      object1,
+      object2,
+      object3,
+    );
+
+    expect(result).not.toBe(object1);
+    expect(result).not.toBe(object2);
+    expect(result).not.toBe(object3);
+
+    expect(result).toEqual(Object.assign({}, object1, object2, object3));
   });
 });
 

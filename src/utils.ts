@@ -1,6 +1,8 @@
 // constants
 import { DEFAULT_OPTIONS, UNGROUPED_NAME } from './constants';
 
+const hasOwnProperty: Function = Object.prototype.hasOwnProperty;
+
 /**
  * create a benchmark object based on the name, group, and fn passed
  * @param name the name of the benchmark
@@ -19,14 +21,37 @@ export const createBenchmark = (
 });
 
 /**
+ * shallowly merge the objects passed into a single new object
+ * @param sources the sources to merge into a single object
+ * @returns the merged object
+ */
+export const mergeObjects = (...sources: Object[]): Object => {
+  const target: { [key: string]: any } = {};
+
+  let source: { [key: string]: any };
+
+  for (let index: number = 0; index < sources.length; index++) {
+    source = sources[index];
+
+    for (const key in source) {
+      if (hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
+/**
  * get the options passed merged with the defaults
  * @param passedOptions the options passed to merge
  * @returns the merged options
  */
 export const getOptions = (passedOptions?: Benchee.Options): Benchee.Options =>
   passedOptions && typeof passedOptions === 'object'
-    ? { ...DEFAULT_OPTIONS, ...passedOptions }
-    : { ...DEFAULT_OPTIONS };
+    ? mergeObjects(DEFAULT_OPTIONS, passedOptions)
+    : mergeObjects(DEFAULT_OPTIONS);
 
 /**
  * sort the results by operations per second (descending)
