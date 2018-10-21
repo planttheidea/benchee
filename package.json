@@ -31,7 +31,10 @@
   "keywords": [
     "benchmark",
     "bench",
-    "timer"
+    "timer",
+    "time",
+    "performance",
+    "speed"
   ],
   "license": "MIT",
   "repository": {
