@@ -29,12 +29,12 @@
   "name": "benchee",
   "homepage": "https://github.com/planttheidea/benchee#readme",
   "keywords": [
-    "memoize",
-    "memoization",
-    "cache",
-    "moize",
-    "mem",
-    "memcache"
+    "benchmark",
+    "bench",
+    "timer",
+    "time",
+    "performance",
+    "speed"
   ],
   "license": "MIT",
   "repository": {

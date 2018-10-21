@@ -53,5 +53,5 @@ export const sortResults = (results: Benchee.Result[]): Benchee.Result[] =>
  * @param delay the time to wait before resolving
  * @returns the promise that is resolved after the delay
  */
-export const wait = (delay: number = 0): Promise<any> =>
+export const wait = (delay: number = 0): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, delay));
