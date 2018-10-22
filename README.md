@@ -242,6 +242,6 @@ Standard stuff, clone the repo and `npm install` dependencies. The npm scripts a
 - `lint:fix` => runs `lint`, fixing any errors if possible
 - `prepublish` => runs `prepublish:compile`
 - `prepublish:compile` => run `lint`, `test:coverage`, and `dist`
-- `test` => run AVA test functions with `NODE_ENV=test`
-- `test:coverage` => run `test` but with `nyc` for coverage checker
+- `test` => run Jest, testing functions with `NODE_ENV=test`
+- `test:coverage` => run `test` but with code coverage output
 - `test:watch` => run `test`, but with persistent watcher
