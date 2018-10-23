@@ -19,10 +19,10 @@ const getResults = (results: Benchee.Result[]): string => {
 
 const sum = (a: number, b: number): number => a + b;
 
-const runBasicSuite = async () => {
+const runSingleBenchmark = async () => {
   const results = await benchmark('basic sum', () => sum(1, 2));
 
-  console.log('basic sum results');
+  console.log('sum results');
   console.log(
     getResults([
       {
@@ -31,6 +31,16 @@ const runBasicSuite = async () => {
       },
     ]),
   );
+};
+
+const runSimpleSuite = async () => {
+  const results = await createSuite()
+    .add('Math.max', () => Math.max(1, 2))
+    .add('Logical OR', () => 2 || 1)
+    .run();
+
+  console.log('Math.max vs || results');
+  console.log(getResults(results.ungrouped));
 };
 
 const smallObject = { foo: 'bar', bar: 'baz', baz: 'quz' };
@@ -89,7 +99,8 @@ const runComplexSuite = async () => {
 };
 
 const runSuites = async () => {
-  await runBasicSuite();
+  await runSingleBenchmark();
+  await runSimpleSuite();
   await runComplexSuite();
 };
 

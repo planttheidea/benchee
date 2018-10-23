@@ -5,7 +5,7 @@ import { createBenchmark } from '../utils';
 
 describe('constructor', () => {
   it('should constrct the BencheeSuite correctly', () => {
-    const suite = new BencheeSuite();
+    const suite: BencheeSuite = new BencheeSuite();
 
     expect(suite).toBeInstanceOf(BencheeSuite);
 
@@ -33,7 +33,7 @@ describe('_onResult', () => {
       tpe: 0.5,
     };
 
-    const suite = new BencheeSuite();
+    const suite: BencheeSuite = new BencheeSuite();
 
     suite.benchmarks[suitebenchmark.group] = [];
     suite.results[suitebenchmark.group] = [];
@@ -69,7 +69,7 @@ describe('_onResult', () => {
       onResult: jest.fn(),
     };
 
-    const suite = new BencheeSuite(options);
+    const suite: BencheeSuite = new BencheeSuite(options);
 
     suite.benchmarks[suitebenchmark.group] = [];
     suite.results[suitebenchmark.group] = [];
@@ -110,7 +110,7 @@ describe('_onResult', () => {
       onGroupComplete: jest.fn(),
     };
 
-    const suite = new BencheeSuite(options);
+    const suite: BencheeSuite = new BencheeSuite(options);
 
     suite.benchmarks[benchmark.group] = [];
     suite.results[benchmark.group] = [];
@@ -152,7 +152,7 @@ describe('_onResult', () => {
       onComplete: jest.fn(),
     };
 
-    const suite = new BencheeSuite(options);
+    const suite: BencheeSuite = new BencheeSuite(options);
 
     suite.benchmarks[benchmark.group] = [];
     suite.results[benchmark.group] = [];
@@ -191,7 +191,7 @@ describe('_onResult', () => {
       onComplete: jest.fn(),
     };
 
-    const suite = new BencheeSuite(options);
+    const suite: BencheeSuite = new BencheeSuite(options);
 
     const existingbenchmark: Benchee.Benchmark = {
       fn() {},
@@ -281,7 +281,7 @@ describe('_runGroup', () => {
 
 describe('_runBenchmark', () => {
   it('should run the benchmark and calculate the result when type is adaptive', async () => {
-    const suite = new BencheeSuite();
+    const suite: BencheeSuite = new BencheeSuite();
 
     const benchmarkOptions: Benchee.BenchmarkOptions = {
       benchmark: {
@@ -310,7 +310,7 @@ describe('_runBenchmark', () => {
   });
 
   it('should run the benchmark and calculate the result when type is fixed', async () => {
-    const suite = new BencheeSuite({
+    const suite: BencheeSuite = new BencheeSuite({
       type: 'fixed',
     });
 
@@ -341,7 +341,7 @@ describe('_runBenchmark', () => {
   });
 
   it('should handle benchmarks that create errors', async () => {
-    const suite = new BencheeSuite({
+    const suite: BencheeSuite = new BencheeSuite({
       type: 'fixed',
     });
 
@@ -371,6 +371,25 @@ describe('_runBenchmark', () => {
     expect(result.stats.ops).toBe(0);
     expect(typeof result.stats.startTime).toBe('number');
     expect(result.stats.tpe).toBe(0);
+  });
+});
+
+describe('_runBenchmarkIterations', () => {
+  it('should run the benchmark function the number of runs specified', () => {
+    const benchmark: Benchee.Benchmark = {
+      fn: jest.fn(),
+      group: UNGROUPED_NAME,
+      iterations: 0,
+      name: 'name',
+    };
+
+    const suite: BencheeSuite = new BencheeSuite();
+
+    const runs: number = 10;
+
+    suite._runBenchmarkIterations(benchmark, runs);
+
+    expect(benchmark.fn).toHaveBeenCalledTimes(runs);
   });
 });
 

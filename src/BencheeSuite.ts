@@ -74,38 +74,10 @@ class BencheeSuite implements BencheeSuite {
       startTime = Date.now(),
     } = benchmarkOptions;
 
-    let pending: number = iterations;
+    const runs: number = Math.max(iterations, 1);
 
     try {
-      while (pending--) {
-        benchmark.fn();
-        benchmark.iterations++;
-      }
-
-      const endTime: number = Date.now();
-      const elapsed: number = Math.max(endTime - startTime, 1);
-
-      if (type !== 'fixed' && elapsed < minTime) {
-        await wait();
-        await this._runBenchmark({
-          benchmark,
-          startTime,
-          iterations: ~~(((iterations * minTime) / elapsed) * 0.9),
-        });
-
-        return;
-      }
-
-      const elapsedInSeconds: number = elapsed / 1000;
-
-      this._onResult(benchmark, {
-        elapsed,
-        endTime,
-        startTime,
-        iterations: benchmark.iterations,
-        ops: ~~(benchmark.iterations / elapsedInSeconds),
-        tpe: elapsed / benchmark.iterations,
-      });
+      this._runBenchmarkIterations(benchmark, runs);
     } catch (error) {
       const endTime: number = Date.now();
       const elapsed: number = endTime - startTime;
@@ -118,6 +90,49 @@ class BencheeSuite implements BencheeSuite {
         ops: 0,
         tpe: 0,
       });
+
+      return;
+    }
+
+    const endTime: number = Date.now();
+
+    benchmark.iterations += runs;
+
+    const elapsed: number = Math.max(endTime - startTime, 1);
+
+    if (type !== 'fixed' && elapsed < minTime) {
+      await wait();
+      await this._runBenchmark({
+        benchmark,
+        startTime,
+        iterations: ~~(((runs * minTime) / elapsed) * 0.9),
+      });
+
+      return;
+    }
+
+    const elapsedInSeconds: number = elapsed / 1000;
+
+    this._onResult(benchmark, {
+      elapsed,
+      endTime,
+      startTime,
+      iterations: benchmark.iterations,
+      ops: ~~(benchmark.iterations / elapsedInSeconds),
+      tpe: elapsed / benchmark.iterations,
+    });
+  }
+
+  /**
+   * execute the runs for the benchmarked function
+   * @param benchmark the benchmark to execute the function for
+   * @param runs the number of times to run the function
+   */
+  _runBenchmarkIterations(benchmark: Benchee.Benchmark, runs: number): void {
+    let pending: number = runs;
+
+    while (pending--) {
+      benchmark.fn();
     }
   }
 
