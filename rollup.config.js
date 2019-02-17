@@ -1,26 +1,43 @@
-import typescript from "rollup-plugin-typescript";
-import { uglify } from "rollup-plugin-uglify";
+import typescript from 'rollup-plugin-typescript';
+import { terser } from 'rollup-plugin-terser';
 
-export default [
-  {
-    input: "src/index.ts",
-    output: {
-      exports: "named",
-      name: "benchee",
-      file: "dist/benchee.js",
-      format: "umd",
-      sourcemap: true
-    },
-    plugins: [typescript()]
+import pkg from './package.json';
+
+const UMD_CONFIG = {
+  input: 'src/index.ts',
+  output: {
+    exports: 'named',
+    file: pkg.browser,
+    format: 'umd',
+    name: pkg.name,
+    sourcemap: true,
   },
-  {
-    input: "src/index.ts",
-    output: {
-      exports: "named",
-      name: "benchee",
-      file: "dist/benchee.min.js",
-      format: "umd"
-    },
-    plugins: [typescript(), uglify()]
-  }
-];
+  plugins: [
+    typescript({
+      typescript: require('typescript'),
+    }),
+  ],
+};
+
+const FORMATTED_CONFIG = Object.assign({}, UMD_CONFIG, {
+  output: [
+    Object.assign({}, UMD_CONFIG.output, {
+      file: pkg.main,
+      format: 'cjs',
+    }),
+    Object.assign({}, UMD_CONFIG.output, {
+      file: pkg.module,
+      format: 'es',
+    }),
+  ],
+});
+
+const MINIFIED_CONFIG = Object.assign({}, UMD_CONFIG, {
+  output: Object.assign({}, UMD_CONFIG.output, {
+    file: pkg.browser.replace('.js', '.min.js'),
+    sourcemap: false,
+  }),
+  plugins: UMD_CONFIG.plugins.concat([terser()]),
+});
+
+export default [UMD_CONFIG, FORMATTED_CONFIG, MINIFIED_CONFIG];

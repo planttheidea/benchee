@@ -26,6 +26,7 @@ const runSingleBenchmark = async () => {
   console.log(
     getResults([
       {
+        error: null,
         name: 'sum',
         stats: results.stats,
       },
@@ -103,6 +104,8 @@ const runSuites = async () => {
   await runSimpleSuite();
   await runComplexSuite();
 };
+
+console.log('Running suite, please wait ...');
 
 runSuites();
 

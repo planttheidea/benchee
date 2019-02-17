@@ -1,7 +1,7 @@
 // src
-import BencheeSuite from '../BencheeSuite';
-import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../constants';
-import { createBenchmark } from '../utils';
+import BencheeSuite from '../src/BencheeSuite';
+import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../src/constants';
+import { createBenchmark } from '../src/utils';
 
 describe('constructor', () => {
   it('should constrct the BencheeSuite correctly', () => {
@@ -38,11 +38,48 @@ describe('_onResult', () => {
     suite.benchmarks[suitebenchmark.group] = [];
     suite.results[suitebenchmark.group] = [];
 
-    suite._onResult(suitebenchmark, stats);
+    suite._onResult(suitebenchmark, null, stats);
 
     expect(suite.results).toEqual({
       [suitebenchmark.group]: [
         {
+          error: null,
+          stats,
+          name: suitebenchmark.name,
+        },
+      ],
+    });
+  });
+
+  it('should handle when a benchmark errors', () => {
+    const suitebenchmark: Benchee.Benchmark = {
+      fn() {},
+      group: UNGROUPED_NAME,
+      iterations: 10,
+      name: 'name',
+    };
+    const stats: Benchee.Stats = {
+      elapsed: 0,
+      endTime: 123456789000,
+      iterations: 0,
+      ops: 0,
+      startTime: 123456789000,
+      tpe: 0,
+    };
+
+    const suite: BencheeSuite = new BencheeSuite();
+
+    suite.benchmarks[suitebenchmark.group] = [];
+    suite.results[suitebenchmark.group] = [];
+
+    const error = new Error('boom');
+
+    suite._onResult(suitebenchmark, error, stats);
+
+    expect(suite.results).toEqual({
+      [suitebenchmark.group]: [
+        {
+          error,
           stats,
           name: suitebenchmark.name,
         },
@@ -74,11 +111,12 @@ describe('_onResult', () => {
     suite.benchmarks[suitebenchmark.group] = [];
     suite.results[suitebenchmark.group] = [];
 
-    suite._onResult(suitebenchmark, stats);
+    suite._onResult(suitebenchmark, null, stats);
 
     expect(suite.results).toEqual({
       [suitebenchmark.group]: [
         {
+          error: null,
           stats,
           name: suitebenchmark.name,
         },
@@ -115,11 +153,12 @@ describe('_onResult', () => {
     suite.benchmarks[benchmark.group] = [];
     suite.results[benchmark.group] = [];
 
-    suite._onResult(benchmark, stats);
+    suite._onResult(benchmark, null, stats);
 
     expect(suite.results).toEqual({
       [benchmark.group]: [
         {
+          error: null,
           stats,
           name: benchmark.name,
         },
@@ -157,11 +196,12 @@ describe('_onResult', () => {
     suite.benchmarks[benchmark.group] = [];
     suite.results[benchmark.group] = [];
 
-    suite._onResult(benchmark, stats);
+    suite._onResult(benchmark, null, stats);
 
     expect(suite.results).toEqual({
       [benchmark.group]: [
         {
+          error: null,
           stats,
           name: benchmark.name,
         },
@@ -203,11 +243,12 @@ describe('_onResult', () => {
     suite.benchmarks[benchmark.group] = [existingbenchmark];
     suite.results[benchmark.group] = [];
 
-    suite._onResult(benchmark, stats);
+    suite._onResult(benchmark, null, stats);
 
     expect(suite.results).toEqual({
       [benchmark.group]: [
         {
+          error: null,
           stats,
           name: benchmark.name,
         },

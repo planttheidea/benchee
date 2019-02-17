@@ -2,6 +2,7 @@
 .gitignore
 .idea
 .nyc_output
+__tests__
 benchmark
 coverage
 DEV_ONLY

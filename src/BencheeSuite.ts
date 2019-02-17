@@ -1,5 +1,5 @@
 // utils
-import { createBenchmark, getOptions, sortResults, wait } from './utils';
+import { createBenchmark, getOptions, now, sortResults, wait } from './utils';
 
 class BencheeSuite implements BencheeSuite {
   benchmarks: Benchee.BenchmarkGroup;
@@ -19,7 +19,11 @@ class BencheeSuite implements BencheeSuite {
    * @param benchmark the benchmark object that was just processed
    * @param stats the statistics of the benchmark execution
    */
-  _onResult(benchmark: Benchee.Benchmark, stats: Benchee.Stats): void {
+  _onResult(
+    benchmark: Benchee.Benchmark,
+    error: Error | null,
+    stats: Benchee.Stats,
+  ): void {
     const {
       benchmarks,
       options: { onComplete, onGroupComplete, onResult },
@@ -27,6 +31,7 @@ class BencheeSuite implements BencheeSuite {
     } = this;
 
     const result: Benchee.Result = {
+      error,
       stats,
       name: benchmark.name,
     };
@@ -71,18 +76,25 @@ class BencheeSuite implements BencheeSuite {
     const {
       benchmark,
       iterations = minIterations,
-      startTime = Date.now(),
+      startTime: passedStartTime,
     } = benchmarkOptions;
 
     const runs: number = Math.max(iterations, 1);
 
+    let endTime: number;
+
+    const startTime: number = passedStartTime || now();
+
     try {
       this._runBenchmarkIterations(benchmark, runs);
+
+      endTime = now();
     } catch (error) {
-      const endTime: number = Date.now();
+      endTime = now();
+
       const elapsed: number = endTime - startTime;
 
-      this._onResult(benchmark, {
+      this._onResult(benchmark, error, {
         elapsed,
         endTime,
         startTime,
@@ -93,8 +105,6 @@ class BencheeSuite implements BencheeSuite {
 
       return;
     }
-
-    const endTime: number = Date.now();
 
     benchmark.iterations += runs;
 
@@ -113,7 +123,7 @@ class BencheeSuite implements BencheeSuite {
 
     const elapsedInSeconds: number = elapsed / 1000;
 
-    this._onResult(benchmark, {
+    this._onResult(benchmark, null, {
       elapsed,
       endTime,
       startTime,

@@ -1,12 +1,13 @@
 // src
-import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../constants';
+import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../src/constants';
 import {
   createBenchmark,
   getOptions,
   mergeObjects,
+  now,
   sortResults,
   wait,
-} from '../utils';
+} from '../src/utils';
 
 describe('createBenchmark', () => {
   it('should create a benchmark without a group assignment', () => {
@@ -84,10 +85,20 @@ describe('mergeObjects', () => {
   });
 });
 
+describe('now', () => {
+  it('should get the correct time in fractions of a millisecond', () => {
+    const result = now();
+    const dateResult = Date.now();
+
+    expect(Math.round(result)).toEqual(dateResult);
+  });
+});
+
 describe('sortOptions', () => {
   it('should get the results sorted by ops', () => {
     const results: Benchee.Result[] = [
       {
+        error: null,
         name: 'second',
         stats: {
           elapsed: 10,
@@ -99,6 +110,7 @@ describe('sortOptions', () => {
         },
       },
       {
+        error: null,
         name: 'third',
         stats: {
           elapsed: 20,
@@ -110,6 +122,7 @@ describe('sortOptions', () => {
         },
       },
       {
+        error: null,
         name: 'first',
         stats: {
           elapsed: 10,
@@ -121,6 +134,7 @@ describe('sortOptions', () => {
         },
       },
       {
+        error: null,
         name: 'fourth',
         stats: {
           elapsed: 20,
@@ -138,6 +152,7 @@ describe('sortOptions', () => {
     expect(result).toBe(results);
     expect(result).toEqual([
       {
+        error: null,
         name: 'first',
         stats: {
           elapsed: 10,
@@ -149,6 +164,7 @@ describe('sortOptions', () => {
         },
       },
       {
+        error: null,
         name: 'second',
         stats: {
           elapsed: 10,
@@ -160,6 +176,7 @@ describe('sortOptions', () => {
         },
       },
       {
+        error: null,
         name: 'third',
         stats: {
           elapsed: 20,
@@ -171,6 +188,7 @@ describe('sortOptions', () => {
         },
       },
       {
+        error: null,
         name: 'fourth',
         stats: {
           elapsed: 20,

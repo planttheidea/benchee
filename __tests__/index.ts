@@ -1,6 +1,6 @@
 // src
-import { benchmark, createSuite } from '../index';
-import BencheeSuite from '../BencheeSuite';
+import { benchmark, createSuite } from '../src/index';
+import BencheeSuite from '../src/BencheeSuite';
 
 describe('createSuite', () => {
   it('should create a new BencheeSuite with the given options', () => {
