@@ -21,6 +21,16 @@ export const createBenchmark = (
 });
 
 /**
+ * get the options passed merged with the defaults
+ * @param passedOptions the options passed to merge
+ * @returns the merged options
+ */
+export const getOptions = (passedOptions?: Benchee.Options): Benchee.Options =>
+  passedOptions && typeof passedOptions === 'object'
+    ? mergeObjects(DEFAULT_OPTIONS, passedOptions)
+    : mergeObjects(DEFAULT_OPTIONS);
+
+/**
  * shallowly merge the objects passed into a single new object
  * @param sources the sources to merge into a single object
  * @returns the merged object
@@ -44,14 +54,31 @@ export const mergeObjects = (...sources: Object[]): Object => {
 };
 
 /**
- * get the options passed merged with the defaults
- * @param passedOptions the options passed to merge
- * @returns the merged options
+ * return the current timestamp in fraction of milliseconds (as accurate as possible)
+ * @returns the current timestamp
  */
-export const getOptions = (passedOptions?: Benchee.Options): Benchee.Options =>
-  passedOptions && typeof passedOptions === 'object'
-    ? mergeObjects(DEFAULT_OPTIONS, passedOptions)
-    : mergeObjects(DEFAULT_OPTIONS);
+export const now = (() => {
+  try {
+    performance.timing.navigationStart + performance.now();
+
+    return () => performance.timing.navigationStart + performance.now();
+  } catch {
+    try {
+      const loadNs = process.hrtime();
+      const loadMs = Date.now();
+
+      const getCurrentTime = () => {
+        const diffNs = process.hrtime(loadNs);
+
+        return (loadMs * 1e6 + (diffNs[0] * 1e9 + diffNs[1])) / 1000000;
+      };
+
+      return getCurrentTime;
+    } catch {
+      return () => Date.now();
+    }
+  }
+})();
 
 /**
  * sort the results by operations per second (descending)

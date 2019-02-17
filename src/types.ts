@@ -27,6 +27,7 @@ declare namespace Benchee {
   }
 
   export interface Result {
+    error: Error | null;
     name: string;
     stats: Stats;
   }

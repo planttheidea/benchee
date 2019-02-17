@@ -1,5 +1,6 @@
 {
   "author": "tony.quetano@planttheidea.com",
+  "browser": "dist/benchee.js",
   "bugs": {
     "url": "https://github.com/planttheidea/benchee/issues"
   },
@@ -13,8 +14,8 @@
     "rollup": "^0.66.6",
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript": "^1.0.0",
-    "rollup-plugin-uglify": "^6.0.0",
     "ts-jest": "^23.10.4",
     "ts-loader": "^5.2.2",
     "tslint": "^5.11.0",
@@ -25,7 +26,8 @@
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.9"
   },
-  "main": "dist/benchee.js",
+  "main": "dist/benchee.cjs.js",
+  "module": "dist/benchee.esm.js",
   "name": "benchee",
   "homepage": "https://github.com/planttheidea/benchee#readme",
   "keywords": [
@@ -52,6 +54,7 @@
     "lint:fix": "npm run lint -- --fix",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
     "prepublish:compile": "npm run lint && npm run test:coverage && npm run dist",
+    "release": "release-it",
     "start": "npm run dev",
     "test": "NODE_PATH=. jest",
     "test:coverage": "npm run test -- --coverage",
