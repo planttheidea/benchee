@@ -36,19 +36,27 @@ export interface ResultsGroup<N extends string = string> {
   results: Result[];
 }
 
-export type Results = Record<string, Result[]>;
+export type Results<N extends string = string> = Record<N, Result[]>;
 
-interface RunnerOptions {
+interface SuiteRunnerOptions {
   onComplete?: (results: Results) => void;
   onGroupComplete?: (resultGroup: ResultsGroup) => void;
   onGroupStart?: (group: string) => void;
   onResult?: (result: Result) => void;
 }
 
-export interface Options extends DefaultOptions, RunnerOptions {}
-export interface NormalizedOptions extends Required<DefaultOptions>, RunnerOptions {}
+interface BenchmarkRunnerOptions<N extends string> {
+  onComplete?: (result: Result<N>) => void;
+}
 
-export interface BenchmarkOptions {
+export interface SuiteOptions extends DefaultOptions, SuiteRunnerOptions {}
+export interface NormalizedSuiteOptions extends Required<DefaultOptions>, SuiteRunnerOptions {}
+
+export interface BenchmarkOptions<N extends string> extends DefaultOptions, BenchmarkRunnerOptions<N> {}
+export interface NormalizedBenchmarkOptions<N extends string>
+  extends Required<DefaultOptions>, BenchmarkRunnerOptions<N> {}
+
+export interface RunBenchmarkOptions {
   benchmark: Benchmark;
   endTime?: number;
   iterations?: number;
@@ -58,6 +66,6 @@ export interface BenchmarkOptions {
 export interface BencheeSuite {
   benchmarks: BenchmarkGroup;
   isRunning: boolean;
-  options: Options;
+  options: SuiteOptions;
   results: Results;
 }

@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS, UNGROUPED_NAME } from './constants.js';
-import type { Benchmark, BenchmarkFn, NormalizedOptions, Options, Result } from './types.js';
+import type { Benchmark, BenchmarkFn, NormalizedSuiteOptions, Result, SuiteOptions } from './types.js';
 
 /**
  * create a benchmark object based on the name, group, and fn passed
@@ -33,7 +33,7 @@ export const createBenchmark = <N extends string>(
  * @param passedOptions the options passed to merge
  * @returns the merged options
  */
-export const getOptions = (passedOptions?: Options): NormalizedOptions =>
+export const getOptions = (passedOptions?: SuiteOptions): NormalizedSuiteOptions =>
   passedOptions && typeof passedOptions === 'object' ? Object.assign(DEFAULT_OPTIONS, passedOptions) : DEFAULT_OPTIONS;
 
 /**

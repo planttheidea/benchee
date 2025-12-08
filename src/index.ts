@@ -1,20 +1,20 @@
 import { BencheeSuite } from './BencheeSuite.js';
-import type { BenchmarkFn, Options, Result, Results } from './types.js';
+import type { BenchmarkFn, BenchmarkOptions, Result, Results, SuiteOptions } from './types.js';
 
 /**
- * create a new benchee suite
- * @param passedOptions the options to create the suite with
- * @returns the new benchee suite
+ * Create a new benchee suite.
  */
-export const createSuite = (passedOptions?: Options): BencheeSuite => new BencheeSuite(passedOptions);
+export const createSuite = (passedOptions?: SuiteOptions): BencheeSuite => new BencheeSuite(passedOptions);
 
 /**
- * benchmark one thing standalone, outside of a given suite
- * @param name the name of the test
- * @param fn the test function
+ * Benchmark one function standalone, outside the context of a suite.
  */
-export const benchmark = (name: string, fn: BenchmarkFn): Promise<Result> =>
-  createSuite()
+export function benchmark<N extends string>(
+  name: N,
+  fn: BenchmarkFn,
+  options?: BenchmarkOptions<N>,
+): Promise<Result<N>> {
+  return createSuite({ onResult: options?.onComplete } as SuiteOptions)
     .add(name, fn)
     .run()
     .then((results: Results) => {
@@ -23,4 +23,5 @@ export const benchmark = (name: string, fn: BenchmarkFn): Promise<Result> =>
       }
 
       return results.ungrouped[0];
-    });
+    }) as Promise<Result<N>>;
+}

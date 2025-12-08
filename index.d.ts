@@ -29,16 +29,20 @@ interface ResultsGroup<N extends string = string> {
   group: N;
   results: Result[];
 }
-type Results = Record<string, Result[]>;
-interface RunnerOptions {
+type Results<N extends string = string> = Record<N, Result[]>;
+interface SuiteRunnerOptions {
   onComplete?: (results: Results) => void;
   onGroupComplete?: (resultGroup: ResultsGroup) => void;
   onGroupStart?: (group: string) => void;
   onResult?: (result: Result) => void;
 }
-interface Options extends DefaultOptions, RunnerOptions {}
-interface NormalizedOptions extends Required<DefaultOptions>, RunnerOptions {}
-interface BenchmarkOptions {
+interface BenchmarkRunnerOptions<N extends string> {
+  onComplete?: (result: Result<N>) => void;
+}
+interface SuiteOptions extends DefaultOptions, SuiteRunnerOptions {}
+interface NormalizedSuiteOptions extends Required<DefaultOptions>, SuiteRunnerOptions {}
+interface BenchmarkOptions<N extends string> extends DefaultOptions, BenchmarkRunnerOptions<N> {}
+interface RunBenchmarkOptions {
   benchmark: Benchmark;
   endTime?: number;
   iterations?: number;
@@ -48,17 +52,17 @@ interface BenchmarkOptions {
 declare class BencheeSuite implements BencheeSuite {
   benchmarks: BenchmarkGroup;
   isRunning: boolean;
-  options: NormalizedOptions;
+  options: NormalizedSuiteOptions;
   results: Results;
-  constructor(passedOptions?: Options);
+  constructor(passedOptions?: SuiteOptions);
   /**
-   * when a benchmark finishes, store the result
+   * When a benchmark finishes, store the result.
    */
   _onResult<const B extends Benchmark>(benchmark: B, error: Error | null, stats: Stats): void;
   /**
    * run the benchmark with the options passed
    */
-  _runBenchmark(benchmarkOptions: BenchmarkOptions): Promise<void>;
+  _runBenchmark(benchmarkOptions: RunBenchmarkOptions): Promise<void>;
   /**
    * execute the runs for the benchmarked function
    */
@@ -78,16 +82,16 @@ declare class BencheeSuite implements BencheeSuite {
 }
 
 /**
- * create a new benchee suite
- * @param passedOptions the options to create the suite with
- * @returns the new benchee suite
+ * Create a new benchee suite.
  */
-declare const createSuite: (passedOptions?: Options) => BencheeSuite;
+declare const createSuite: (passedOptions?: SuiteOptions) => BencheeSuite;
 /**
- * benchmark one thing standalone, outside of a given suite
- * @param name the name of the test
- * @param fn the test function
+ * Benchmark one function standalone, outside the context of a suite.
  */
-declare const benchmark: (name: string, fn: BenchmarkFn) => Promise<Result>;
+declare function benchmark<N extends string>(
+  name: N,
+  fn: BenchmarkFn,
+  options?: BenchmarkOptions<N>,
+): Promise<Result<N>>;
 
 export { benchmark, createSuite };

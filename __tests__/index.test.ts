@@ -26,4 +26,23 @@ describe('benchmark', () => {
     expect(typeof result.stats.startTime).toBe('number');
     expect(typeof result.stats.tpe).toBe('number');
   });
+
+  it('should create a new suite with a single benchmark with options, run it', async () => {
+    const name = 'name';
+    const fn = vi.fn();
+    const onComplete = vi.fn();
+
+    const result = await benchmark(name, fn, { onComplete });
+
+    expect(result.name).toBe(name);
+
+    expect(typeof result.stats.elapsed).toBe('number');
+    expect(typeof result.stats.endTime).toBe('number');
+    expect(typeof result.stats.iterations).toBe('number');
+    expect(typeof result.stats.ops).toBe('number');
+    expect(typeof result.stats.startTime).toBe('number');
+    expect(typeof result.stats.tpe).toBe('number');
+
+    expect(onComplete).toHaveBeenCalledWith(result);
+  });
 });

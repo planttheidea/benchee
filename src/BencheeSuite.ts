@@ -1,22 +1,22 @@
 import type {
   Benchmark,
   BenchmarkGroup,
-  BenchmarkOptions,
-  NormalizedOptions,
-  Options,
+  NormalizedSuiteOptions,
   Result,
   Results,
+  RunBenchmarkOptions,
   Stats,
+  SuiteOptions,
 } from './types.js';
 import { createBenchmark, getOptions, now, sortResults, wait } from './utils.js';
 
 export class BencheeSuite implements BencheeSuite {
   benchmarks: BenchmarkGroup;
   isRunning: boolean;
-  options: NormalizedOptions;
+  options: NormalizedSuiteOptions;
   results: Results;
 
-  constructor(passedOptions?: Options) {
+  constructor(passedOptions?: SuiteOptions) {
     this.benchmarks = {};
     this.isRunning = false;
     this.options = getOptions(passedOptions);
@@ -24,7 +24,7 @@ export class BencheeSuite implements BencheeSuite {
   }
 
   /**
-   * when a benchmark finishes, store the result
+   * When a benchmark finishes, store the result.
    */
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   _onResult<const B extends Benchmark>(benchmark: B, error: Error | null, stats: Stats): void {
@@ -69,7 +69,7 @@ export class BencheeSuite implements BencheeSuite {
   /**
    * run the benchmark with the options passed
    */
-  async _runBenchmark(benchmarkOptions: BenchmarkOptions): Promise<void> {
+  async _runBenchmark(benchmarkOptions: RunBenchmarkOptions): Promise<void> {
     const { minIterations, minTime, type } = this.options;
     const { benchmark, iterations = minIterations, startTime: passedStartTime } = benchmarkOptions;
     const runs = Math.max(iterations, 1);
