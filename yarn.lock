@@ -1900,9 +1900,10 @@ __metadata:
     cli-table3: "npm:^0.6.5"
     eslint: "npm:^9.39.1"
     prettier: "npm:^3.7.4"
+    release-it: "npm:^19.0.6"
     rollup: "npm:^4.53.3"
     typescript: "npm:^5.9.3"
-    vite: "npm:^7.2.6"
+    vite: "npm:^7.2.7"
     vitest: "npm:^4.0.15"
   languageName: unknown
   linkType: soft
@@ -6290,7 +6291,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^6.0.0 || ^7.0.0, vite@npm:^7.2.6":
+"vite@npm:^6.0.0 || ^7.0.0, vite@npm:^7.2.6, vite@npm:^7.2.7":
   version: 7.2.7
   resolution: "vite@npm:7.2.7"
   dependencies:
