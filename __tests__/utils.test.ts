@@ -1,20 +1,15 @@
-// src
-import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../src/constants';
-import {
-  createBenchmark,
-  getOptions,
-  mergeObjects,
-  now,
-  sortResults,
-  wait,
-} from '../src/utils';
+/* eslint-disable @typescript-eslint/no-empty-function */
+
+import { describe, expect, it, vi } from 'vitest';
+import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../src/constants.js';
+import { createBenchmark, getOptions, now, sortResults, wait } from '../src/utils.js';
 
 describe('createBenchmark', () => {
   it('should create a benchmark without a group assignment', () => {
-    const name: string = 'name';
-    const fn: Function = () => {};
+    const name = 'name';
+    const fn = () => {};
 
-    const result: Benchee.Benchmark = createBenchmark(name, fn);
+    const result = createBenchmark(name, fn);
 
     expect(result).toEqual({
       fn,
@@ -25,11 +20,11 @@ describe('createBenchmark', () => {
   });
 
   it('should create a benchmark with a group assignment', () => {
-    const name: string = 'name';
-    const group: string = 'group';
-    const fn: Function = () => {};
+    const name = 'name';
+    const group = 'group';
+    const fn = () => {};
 
-    const result: Benchee.Benchmark = createBenchmark(name, group, fn);
+    const result = createBenchmark(name, group, fn);
 
     expect(result).toEqual({
       fn,
@@ -42,9 +37,9 @@ describe('createBenchmark', () => {
 
 describe('getOptions', () => {
   it('should get the merged options when passedOptions is an object', () => {
-    const passedOptions: Benchee.Options = { onComplete() {} };
+    const passedOptions = { onComplete() {} };
 
-    const result: Benchee.Options = getOptions(passedOptions);
+    const result = getOptions(passedOptions);
 
     expect(result).toEqual({
       ...DEFAULT_OPTIONS,
@@ -53,35 +48,10 @@ describe('getOptions', () => {
   });
 
   it('should get the default options when passedOptions is null', () => {
-    const passedOptions: any = null;
-
-    const result = getOptions(passedOptions);
+    // @ts-expect-error = Allow testing error condition.
+    const result = getOptions(null);
 
     expect(result).toEqual(DEFAULT_OPTIONS);
-  });
-});
-
-describe('mergeObjects', () => {
-  it('should merge the objects passed into a single new object', () => {
-    const object1 = { foo: 'bar' };
-    const object2 = { bar: 'baz' };
-    const object3 = Object.create({
-      fn() {},
-    });
-
-    object3.foo = 'quz';
-
-    const result: { [key: string]: any } = mergeObjects(
-      object1,
-      object2,
-      object3,
-    );
-
-    expect(result).not.toBe(object1);
-    expect(result).not.toBe(object2);
-    expect(result).not.toBe(object3);
-
-    expect(result).toEqual(Object.assign({}, object1, object2, object3));
   });
 });
 
@@ -90,13 +60,13 @@ describe('now', () => {
     const result = now();
     const dateResult = Date.now();
 
-    expect(Math.round(result)).toEqual(dateResult);
+    expect(Math.floor(result)).toEqual(dateResult);
   });
 });
 
 describe('sortOptions', () => {
   it('should get the results sorted by ops', () => {
-    const results: Benchee.Result[] = [
+    const results = [
       {
         error: null,
         name: 'second',
@@ -147,7 +117,7 @@ describe('sortOptions', () => {
       },
     ];
 
-    const result: Benchee.Result[] = sortResults(results);
+    const result = sortResults(results);
 
     expect(result).toBe(results);
     expect(result).toEqual([
@@ -205,22 +175,24 @@ describe('sortOptions', () => {
 
 describe('wait', () => {
   it('should wait for the passed time before resolving', async () => {
+    const spy = vi.spyOn(globalThis, 'setTimeout');
     const delay = 100;
 
-    jest.useFakeTimers();
+    await wait(delay);
 
-    wait(delay);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenLastCalledWith(expect.any(Function), delay);
 
-    expect(setTimeout).toHaveBeenCalledTimes(1);
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), delay);
+    spy.mockRestore();
   });
 
   it('should wait for the default time before resolving', async () => {
-    jest.useFakeTimers();
+    const spy = vi.spyOn(globalThis, 'setTimeout');
+    await wait();
 
-    wait();
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenLastCalledWith(expect.any(Function), 0);
 
-    expect(setTimeout).toHaveBeenCalledTimes(1);
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 0);
+    spy.mockRestore();
   });
 });

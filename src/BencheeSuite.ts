@@ -1,13 +1,22 @@
-// utils
-import { createBenchmark, getOptions, now, sortResults, wait } from './utils';
+import type {
+  Benchmark,
+  BenchmarkGroup,
+  NormalizedSuiteOptions,
+  Result,
+  Results,
+  RunBenchmarkOptions,
+  Stats,
+  SuiteOptions,
+} from './types.js';
+import { createBenchmark, getOptions, now, sortResults, wait } from './utils.js';
 
-class BencheeSuite implements BencheeSuite {
-  benchmarks: Benchee.BenchmarkGroup;
+export class BencheeSuite implements BencheeSuite {
+  benchmarks: BenchmarkGroup;
   isRunning: boolean;
-  options: Benchee.Options;
-  results: Benchee.Results;
+  options: NormalizedSuiteOptions;
+  results: Results;
 
-  constructor(passedOptions?: Benchee.Options) {
+  constructor(passedOptions?: SuiteOptions) {
     this.benchmarks = {};
     this.isRunning = false;
     this.options = getOptions(passedOptions);
@@ -15,86 +24,79 @@ class BencheeSuite implements BencheeSuite {
   }
 
   /**
-   * when a benchmark finishes, store the result
-   * @param benchmark the benchmark object that was just processed
-   * @param stats the statistics of the benchmark execution
+   * When a benchmark finishes, store the result.
    */
-  _onResult(
-    benchmark: Benchee.Benchmark,
-    error: Error | null,
-    stats: Benchee.Stats,
-  ): void {
-    const {
-      benchmarks,
-      options: { onComplete, onGroupComplete, onResult },
-      results,
-    } = this;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+  _onResult<const B extends Benchmark>(benchmark: B, error: Error | null, stats: Stats): void {
+    const { onComplete, onGroupComplete, onResult } = this.options;
 
-    const result: Benchee.Result = {
+    const result: Result<B['name']> = {
       error,
       stats,
       name: benchmark.name,
     };
 
-    results[benchmark.group].push(result);
+    const groupResults = this.results[benchmark.group];
+
+    if (groupResults) {
+      groupResults.push(result);
+    } else {
+      this.results[benchmark.group] = [result];
+    }
 
     if (typeof onResult === 'function') {
       onResult(result);
     }
 
-    if (
-      typeof onGroupComplete === 'function' &&
-      !benchmarks[benchmark.group].length
-    ) {
+    if (typeof onGroupComplete === 'function' && !this.benchmarks[benchmark.group]?.length) {
       onGroupComplete({
         group: benchmark.group,
-        results: sortResults(results[benchmark.group]),
+        results: sortResults(this.results[benchmark.group] ?? []),
       });
     }
 
     if (typeof onComplete === 'function') {
-      for (const group in benchmarks) {
-        if (benchmarks[group].length) {
+      for (const group in this.benchmarks) {
+        if (this.benchmarks[group]?.length) {
           return;
         }
       }
 
-      onComplete(results);
+      onComplete(this.results);
     }
   }
 
   /**
    * run the benchmark with the options passed
-   * @param benchmarkOptions the options for the given benchmark
    */
-  async _runBenchmark(
-    benchmarkOptions: Benchee.BenchmarkOptions,
-  ): Promise<void> {
-    const {
-      options: { minIterations, minTime, type },
-    } = this;
-    const {
-      benchmark,
-      iterations = minIterations,
-      startTime: passedStartTime,
-    } = benchmarkOptions;
-
-    const runs: number = Math.max(iterations, 1);
+  async _runBenchmark(benchmarkOptions: RunBenchmarkOptions): Promise<void> {
+    const { minIterations, minTime, type } = this.options;
+    const { benchmark, iterations = minIterations, startTime: passedStartTime } = benchmarkOptions;
+    const runs = Math.max(iterations, 1);
 
     let endTime: number;
 
-    const startTime: number = passedStartTime || now();
+    const startTime = passedStartTime ?? now();
 
     try {
       this._runBenchmarkIterations(benchmark, runs);
 
       endTime = now();
-    } catch (error) {
+    } catch (error: unknown) {
       endTime = now();
 
-      const elapsed: number = endTime - startTime;
+      const elapsed = endTime - startTime;
 
-      this._onResult(benchmark, error, {
+      const normalizedError =
+        error === null || error instanceof Error
+          ? error
+          : new Error(
+              // eslint-disable-next-line @typescript-eslint/no-base-to-string
+              error?.toString(),
+              { cause: error },
+            );
+
+      this._onResult(benchmark, normalizedError, {
         elapsed,
         endTime,
         startTime,
@@ -108,7 +110,7 @@ class BencheeSuite implements BencheeSuite {
 
     benchmark.iterations += runs;
 
-    const elapsed: number = Math.max(endTime - startTime, 1);
+    const elapsed = Math.max(endTime - startTime, 1);
 
     if (type !== 'fixed' && elapsed < minTime) {
       await wait();
@@ -135,10 +137,8 @@ class BencheeSuite implements BencheeSuite {
 
   /**
    * execute the runs for the benchmarked function
-   * @param benchmark the benchmark to execute the function for
-   * @param runs the number of times to run the function
    */
-  _runBenchmarkIterations(benchmark: Benchee.Benchmark, runs: number): void {
+  _runBenchmarkIterations(benchmark: Benchmark, runs: number): void {
     let pending: number = runs;
 
     while (pending--) {
@@ -148,13 +148,8 @@ class BencheeSuite implements BencheeSuite {
 
   /**
    * run a group of benchmarks
-   * @param groupBenchmarks the benchmarks for the given group
-   * @param group the name of the group being run
    */
-  async _runGroup(
-    groupBenchmarks: Benchee.Benchmark[],
-    group?: string,
-  ): Promise<void> {
+  async _runGroup(groupBenchmarks: Benchmark[], group?: string): Promise<void> {
     if (!groupBenchmarks.length) {
       return Promise.resolve();
     }
@@ -169,28 +164,18 @@ class BencheeSuite implements BencheeSuite {
 
     while (groupBenchmarks.length) {
       await wait(delay);
-      await this._runBenchmark({ benchmark: groupBenchmarks.shift() });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      await this._runBenchmark({ benchmark: groupBenchmarks.shift()! });
     }
   }
 
   /**
    * add a benchmark to the queue to be run
-   * @param name the name of the benchmark
-   * @param benchmarkGroup the group the benchmark is in, or the benchmark function itself
-   * @param benchmarkFn the benchmark function (only when group is provided)
    */
-  add(
-    name: string,
-    benchmarkGroup: string | Function,
-    benchmarkFn?: Function,
-  ): BencheeSuite {
+  add(name: string, benchmarkGroup: string | ((...args: any[]) => any), benchmarkFn?: (...args: any[]) => any): this {
     const { benchmarks, results } = this;
 
-    const benchmark: Benchee.Benchmark = createBenchmark(
-      name,
-      benchmarkGroup,
-      benchmarkFn,
-    );
+    const benchmark: Benchmark = createBenchmark(name, benchmarkGroup, benchmarkFn);
     const { group } = benchmark;
 
     if (!benchmarks[group]) {
@@ -206,7 +191,7 @@ class BencheeSuite implements BencheeSuite {
   /**
    * run the benchmarks in the queue
    */
-  async run(): Promise<Benchee.Results> {
+  async run(): Promise<Results> {
     const { benchmarks, isRunning, results } = this;
 
     if (isRunning) {
@@ -216,7 +201,11 @@ class BencheeSuite implements BencheeSuite {
     this.isRunning = true;
 
     for (const group in benchmarks) {
-      await this._runGroup(benchmarks[group], group);
+      const benchmarkGroup = benchmarks[group];
+
+      if (benchmarkGroup) {
+        await this._runGroup(benchmarkGroup, group);
+      }
     }
 
     this.isRunning = false;
@@ -224,5 +213,3 @@ class BencheeSuite implements BencheeSuite {
     return results;
   }
 }
-
-export default BencheeSuite;

@@ -1,11 +1,8 @@
-// external dependencies
-const Table = require('cli-table2');
+import Table from 'cli-table3';
+import { benchmark, createSuite } from '../src/index.js';
+import type { Result } from '../src/types.js';
 
-// src
-// import { benchmark, createSuite } from '../dist/benchee';
-import { benchmark, createSuite } from '../src';
-
-const getResults = (results: Benchee.Result[]): string => {
+const getResults = (results: Result[]): string => {
   const table = new Table({
     head: ['Name', 'Ops / sec'],
   });
@@ -37,11 +34,13 @@ const runSingleBenchmark = async () => {
 const runSimpleSuite = async () => {
   const results = await createSuite()
     .add('Math.max', () => Math.max(1, 2))
+    // @ts-expect-error - Allow testing simple setup
+    // eslint-disable-next-line no-constant-binary-expression, @typescript-eslint/no-unnecessary-condition
     .add('Logical OR', () => 2 || 1)
     .run();
 
   console.log('Math.max vs || results');
-  console.log(getResults(results.ungrouped));
+  console.log(getResults(results.ungrouped ?? []));
 };
 
 const smallObject = { foo: 'bar', bar: 'baz', baz: 'quz' };
@@ -52,13 +51,11 @@ for (let index = 0; index < array.length; index++) {
   array[index] = 1;
 }
 
-interface LargeObject {
-  [key: string]: number;
-}
+type LargeObject = Record<string, number>;
 
-const largeObject = array.reduce(
+const largeObject = array.reduce<Record<string, number>>(
   (object: LargeObject, value: number, index: number): LargeObject => {
-    object[`key_${index}`] = value;
+    object[`key_${index.toString()}`] = value;
 
     return object;
   },
@@ -84,18 +81,22 @@ const runComplexSuite = async () => {
       }
     })
     .add('Object.keys()', 'small object', () => {
-      const keys = Object.keys(smallObject);
+      const _keys = Object.keys(smallObject);
     })
     .add('Object.keys()', 'large object', () => {
-      const keys = Object.keys(largeObject);
+      const _keys = Object.keys(largeObject);
     })
     .run();
 
   for (const key in results) {
     const group = results[key];
 
-    console.log(`object compare results - ${key}`);
-    console.log(getResults(group));
+    if (group) {
+      console.log(`object compare results - ${key}`);
+      console.log(getResults(group));
+    } else {
+      console.error(`No results found for ${key}.`);
+    }
   }
 };
 
@@ -107,15 +108,4 @@ const runSuites = async () => {
 
 console.log('Running suite, please wait ...');
 
-runSuites();
-
-document.body.style.backgroundColor = '#1d1d1d';
-document.body.style.color = '#d5d5d5';
-document.body.style.margin = '0';
-document.body.style.padding = '0';
-
-const div = document.createElement('div');
-
-div.textContent = 'Check the console for details.';
-
-document.body.appendChild(div);
+void runSuites();

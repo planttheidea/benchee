@@ -1,8 +1,0 @@
-{
-  "github": {
-    "release": true
-  },
-  "scripts": {
-    "beforeStart": "npm run prepublish:compile"
-  }
-}

@@ -24,19 +24,20 @@ Simple benchmarks in both node and browser
 
 ## Requirements
 
-`benchee` requires that `Promise` is available globally. If using an environment that does not support it, you should polyfill prior to importing `benchee`.
+`benchee` requires that `Promise` is available globally. If using an environment that does not support it, you should
+polyfill prior to importing `benchee`.
 
 ## Usage
 
 ```javascript
-import { benchmark, createSuite } from "benchee";
+import { benchmark, createSuite } from 'benchee';
 
 // the functions to benchmark
 const add = (a, b) => a + b;
 const subtract = (a, b) => a - b;
 
 // create an individual benchmark
-benchmark("add", () => add(1, 2)).then(results => console.log(results));
+benchmark('add', () => add(1, 2)).then((results) => console.log(results));
 
 /*
 {
@@ -54,10 +55,10 @@ benchmark("add", () => add(1, 2)).then(results => console.log(results));
 
 // or create a suite of benchmarks
 createSuite()
-  .add("add", () => add(1, 2))
-  .add("subtract", () => subtract(1, 2))
+  .add('add', () => add(1, 2))
+  .add('subtract', () => subtract(1, 2))
   .run()
-  .then(results => console.log(results));
+  .then((results) => console.log(results));
 
 /*
 {
@@ -89,20 +90,23 @@ createSuite()
 */
 ```
 
-The results contract is `Promise`-based, however you can also access the results in a [callback format](#oncomplete) if preferred.
+The results contract is `Promise`-based, however you can also access the results in a [callback format](#oncomplete) if
+preferred.
 
 ## Benchmark groups
 
-In addition to running standard benchmarks, you can group benchmarks together within the same suite. The results of each group can be accessed through the [`onGroupComplete` callback](#ongroupcomplete), and will namespaced under the group name in the final results.
+In addition to running standard benchmarks, you can group benchmarks together within the same suite. The results of each
+group can be accessed through the [`onGroupComplete` callback](#ongroupcomplete), and will namespaced under the group
+name in the final results.
 
 To apply a group, simply add a group name as the second parameter to your test.
 
 ```javascript
 createSuite()
-  .add("add", "math", () => add(1, 2))
-  .add("trim", "string", () => "  trimmed  ".trim())
+  .add('add', 'math', () => add(1, 2))
+  .add('trim', 'string', () => '  trimmed  '.trim())
   .run()
-  .then(results => console.log(results));
+  .then((results) => console.log(results));
 
 /*
 {
@@ -175,7 +179,8 @@ The minimum amount of time that needs to elapse before the benchmark is consider
 
 #### onComplete
 
-Function called when suite has finished running. This is the callback method to receive results, if preferred over the standard promised-based method.
+Function called when suite has finished running. This is the callback method to receive results, if preferred over the
+standard promised-based method.
 
 ```javascript
 onComplete: (results: Benchee.Results) => void;
@@ -224,7 +229,8 @@ Valid values:
 - Opera (20+)
 - Safari (7.1+)
 
-**NOTE**: If a `Promise` polyfill is provided, then older versions / unlisted browsers should be supported as well (notably IE11).
+**NOTE**: If a `Promise` polyfill is provided, then older versions / unlisted browsers should be supported as well
+(notably IE11).
 
 #### Node
 
