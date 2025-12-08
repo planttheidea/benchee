@@ -1,11 +1,14 @@
-// src
-import BencheeSuite from '../src/BencheeSuite';
-import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../src/constants';
-import { createBenchmark } from '../src/utils';
+/* eslint-disable @typescript-eslint/no-empty-function */
+
+import { describe, expect, it, vi } from 'vitest';
+import { BencheeSuite } from '../src/BencheeSuite.js';
+import { DEFAULT_OPTIONS, UNGROUPED_NAME } from '../src/constants.js';
+import type { Benchmark } from '../src/types.js';
+import { createBenchmark } from '../src/utils.js';
 
 describe('constructor', () => {
   it('should constrct the BencheeSuite correctly', () => {
-    const suite: BencheeSuite = new BencheeSuite();
+    const suite = new BencheeSuite();
 
     expect(suite).toBeInstanceOf(BencheeSuite);
 
@@ -18,13 +21,13 @@ describe('constructor', () => {
 
 describe('_onResult', () => {
   it('should add the result to the results of the suite', () => {
-    const suitebenchmark: Benchee.Benchmark = {
+    const suitebenchmark = {
       fn() {},
       group: UNGROUPED_NAME,
       iterations: 10,
       name: 'name',
     };
-    const stats: Benchee.Stats = {
+    const stats = {
       elapsed: 10,
       endTime: 234567891000,
       iterations: 20,
@@ -52,13 +55,13 @@ describe('_onResult', () => {
   });
 
   it('should handle when a benchmark errors', () => {
-    const suitebenchmark: Benchee.Benchmark = {
+    const suitebenchmark = {
       fn() {},
       group: UNGROUPED_NAME,
       iterations: 10,
       name: 'name',
     };
-    const stats: Benchee.Stats = {
+    const stats = {
       elapsed: 0,
       endTime: 123456789000,
       iterations: 0,
@@ -88,13 +91,13 @@ describe('_onResult', () => {
   });
 
   it('should call onResult in options if present', () => {
-    const suitebenchmark: Benchee.Benchmark = {
+    const suitebenchmark = {
       fn() {},
       group: UNGROUPED_NAME,
       iterations: 10,
       name: 'name',
     };
-    const stats: Benchee.Stats = {
+    const stats = {
       elapsed: 10,
       endTime: 234567891000,
       iterations: 20,
@@ -102,8 +105,8 @@ describe('_onResult', () => {
       startTime: 123456789000,
       tpe: 0.5,
     };
-    const options: Benchee.Options = {
-      onResult: jest.fn(),
+    const options = {
+      onResult: vi.fn(),
     };
 
     const suite: BencheeSuite = new BencheeSuite(options);
@@ -124,19 +127,17 @@ describe('_onResult', () => {
     });
 
     expect(options.onResult).toHaveBeenCalledTimes(1);
-    expect(options.onResult).toHaveBeenLastCalledWith(
-      suite.results[suitebenchmark.group][0],
-    );
+    expect(options.onResult).toHaveBeenLastCalledWith(suite.results[suitebenchmark.group]?.[0]);
   });
 
   it('should call onGroupComplete in options if present', () => {
-    const benchmark: Benchee.Benchmark = {
+    const benchmark = {
       fn() {},
       group: UNGROUPED_NAME,
       iterations: 10,
       name: 'name',
     };
-    const stats: Benchee.Stats = {
+    const stats = {
       elapsed: 10,
       endTime: 234567891000,
       iterations: 20,
@@ -144,8 +145,8 @@ describe('_onResult', () => {
       startTime: 123456789000,
       tpe: 0.5,
     };
-    const options: Benchee.Options = {
-      onGroupComplete: jest.fn(),
+    const options = {
+      onGroupComplete: vi.fn(),
     };
 
     const suite: BencheeSuite = new BencheeSuite(options);
@@ -173,13 +174,13 @@ describe('_onResult', () => {
   });
 
   it('should call onComplete in options if present', () => {
-    const benchmark: Benchee.Benchmark = {
+    const benchmark = {
       fn() {},
       group: UNGROUPED_NAME,
       iterations: 10,
       name: 'name',
     };
-    const stats: Benchee.Stats = {
+    const stats = {
       elapsed: 10,
       endTime: 234567891000,
       iterations: 20,
@@ -187,8 +188,8 @@ describe('_onResult', () => {
       startTime: 123456789000,
       tpe: 0.5,
     };
-    const options: Benchee.Options = {
-      onComplete: jest.fn(),
+    const options = {
+      onComplete: vi.fn(),
     };
 
     const suite: BencheeSuite = new BencheeSuite(options);
@@ -213,13 +214,13 @@ describe('_onResult', () => {
   });
 
   it('should not call onComplete in options if present but benchmarks in a group remain', () => {
-    const benchmark: Benchee.Benchmark = {
+    const benchmark = {
       fn() {},
       group: UNGROUPED_NAME,
       iterations: 10,
       name: 'name',
     };
-    const stats: Benchee.Stats = {
+    const stats = {
       elapsed: 10,
       endTime: 234567891000,
       iterations: 20,
@@ -227,13 +228,13 @@ describe('_onResult', () => {
       startTime: 123456789000,
       tpe: 0.5,
     };
-    const options: Benchee.Options = {
-      onComplete: jest.fn(),
+    const options = {
+      onComplete: vi.fn(),
     };
 
     const suite: BencheeSuite = new BencheeSuite(options);
 
-    const existingbenchmark: Benchee.Benchmark = {
+    const existingbenchmark = {
       fn() {},
       group: benchmark.group,
       iterations: 0,
@@ -261,7 +262,7 @@ describe('_onResult', () => {
 
 describe('_runGroup', () => {
   it('should return an empty promise when no groupbenchmarks exist', async () => {
-    const groupbenchmarks: Benchee.Benchmark[] = [];
+    const groupbenchmarks: Benchmark[] = [];
 
     const suite: BencheeSuite = new BencheeSuite();
 
@@ -269,10 +270,10 @@ describe('_runGroup', () => {
   });
 
   it('should run all benchmarks in the group before continuing', async () => {
-    const firstbenchmark: Function = jest.fn();
-    const secondbenchmark: Function = jest.fn();
+    const firstbenchmark = vi.fn();
+    const secondbenchmark = vi.fn();
 
-    const groupbenchmarks: Benchee.Benchmark[] = [
+    const groupbenchmarks: Benchmark[] = [
       createBenchmark('first', firstbenchmark),
       createBenchmark('second', secondbenchmark),
     ];
@@ -291,16 +292,16 @@ describe('_runGroup', () => {
   });
 
   it('should call onGroupStart if the group is passed', async () => {
-    const firstbenchmark: Function = jest.fn();
-    const secondbenchmark: Function = jest.fn();
+    const firstbenchmark = vi.fn();
+    const secondbenchmark = vi.fn();
 
-    const groupbenchmarks: Benchee.Benchmark[] = [
+    const groupbenchmarks: Benchmark[] = [
       createBenchmark('first', firstbenchmark),
       createBenchmark('second', secondbenchmark),
     ];
-    const group: string = 'group';
-    const options: Benchee.Options = {
-      onGroupStart: jest.fn(),
+    const group = 'group';
+    const options = {
+      onGroupStart: vi.fn(),
     };
 
     const suite: BencheeSuite = new BencheeSuite(options);
@@ -324,9 +325,9 @@ describe('_runBenchmark', () => {
   it('should run the benchmark and calculate the result when type is adaptive', async () => {
     const suite: BencheeSuite = new BencheeSuite();
 
-    const benchmarkOptions: Benchee.BenchmarkOptions = {
+    const benchmarkOptions = {
       benchmark: {
-        fn: jest.fn(),
+        fn: vi.fn(),
         group: UNGROUPED_NAME,
         iterations: 0,
         name: 'name',
@@ -340,14 +341,14 @@ describe('_runBenchmark', () => {
 
     expect(suite.results[UNGROUPED_NAME].length).toBe(1);
 
-    const result: Benchee.Result = suite.results[UNGROUPED_NAME][0];
+    const result = suite.results[UNGROUPED_NAME][0];
 
-    expect(typeof result.stats.elapsed).toBe('number');
-    expect(typeof result.stats.endTime).toBe('number');
-    expect(typeof result.stats.iterations).toBe('number');
-    expect(typeof result.stats.ops).toBe('number');
-    expect(typeof result.stats.startTime).toBe('number');
-    expect(typeof result.stats.tpe).toBe('number');
+    expect(typeof result?.stats.elapsed).toBe('number');
+    expect(typeof result?.stats.endTime).toBe('number');
+    expect(typeof result?.stats.iterations).toBe('number');
+    expect(typeof result?.stats.ops).toBe('number');
+    expect(typeof result?.stats.startTime).toBe('number');
+    expect(typeof result?.stats.tpe).toBe('number');
   });
 
   it('should run the benchmark and calculate the result when type is fixed', async () => {
@@ -355,9 +356,9 @@ describe('_runBenchmark', () => {
       type: 'fixed',
     });
 
-    const benchmarkOptions: Benchee.BenchmarkOptions = {
+    const benchmarkOptions = {
       benchmark: {
-        fn: jest.fn(),
+        fn: vi.fn(),
         group: UNGROUPED_NAME,
         iterations: 0,
         name: 'name',
@@ -371,14 +372,14 @@ describe('_runBenchmark', () => {
 
     expect(suite.results[UNGROUPED_NAME].length).toBe(1);
 
-    const result: Benchee.Result = suite.results[UNGROUPED_NAME][0];
+    const result = suite.results[UNGROUPED_NAME][0];
 
-    expect(typeof result.stats.elapsed).toBe('number');
-    expect(typeof result.stats.endTime).toBe('number');
-    expect(result.stats.iterations).toBe(DEFAULT_OPTIONS.minIterations);
-    expect(typeof result.stats.ops).toBe('number');
-    expect(typeof result.stats.startTime).toBe('number');
-    expect(typeof result.stats.tpe).toBe('number');
+    expect(typeof result?.stats.elapsed).toBe('number');
+    expect(typeof result?.stats.endTime).toBe('number');
+    expect(result?.stats.iterations).toBe(DEFAULT_OPTIONS.minIterations);
+    expect(typeof result?.stats.ops).toBe('number');
+    expect(typeof result?.stats.startTime).toBe('number');
+    expect(typeof result?.stats.tpe).toBe('number');
   });
 
   it('should handle benchmarks that create errors', async () => {
@@ -386,9 +387,9 @@ describe('_runBenchmark', () => {
       type: 'fixed',
     });
 
-    const benchmarkOptions: Benchee.BenchmarkOptions = {
+    const benchmarkOptions = {
       benchmark: {
-        fn: jest.fn(() => {
+        fn: vi.fn(() => {
           throw new Error('boom');
         }),
         group: UNGROUPED_NAME,
@@ -404,21 +405,21 @@ describe('_runBenchmark', () => {
 
     expect(suite.results[UNGROUPED_NAME].length).toBe(1);
 
-    const result: Benchee.Result = suite.results[UNGROUPED_NAME][0];
+    const result = suite.results[UNGROUPED_NAME][0];
 
-    expect(typeof result.stats.elapsed).toBe('number');
-    expect(typeof result.stats.endTime).toBe('number');
-    expect(result.stats.iterations).toBe(0);
-    expect(result.stats.ops).toBe(0);
-    expect(typeof result.stats.startTime).toBe('number');
-    expect(result.stats.tpe).toBe(0);
+    expect(typeof result?.stats.elapsed).toBe('number');
+    expect(typeof result?.stats.endTime).toBe('number');
+    expect(result?.stats.iterations).toBe(0);
+    expect(result?.stats.ops).toBe(0);
+    expect(typeof result?.stats.startTime).toBe('number');
+    expect(result?.stats.tpe).toBe(0);
   });
 });
 
 describe('_runBenchmarkIterations', () => {
   it('should run the benchmark function the number of runs specified', () => {
-    const benchmark: Benchee.Benchmark = {
-      fn: jest.fn(),
+    const benchmark = {
+      fn: vi.fn(),
       group: UNGROUPED_NAME,
       iterations: 0,
       name: 'name',
@@ -426,7 +427,7 @@ describe('_runBenchmarkIterations', () => {
 
     const suite: BencheeSuite = new BencheeSuite();
 
-    const runs: number = 10;
+    const runs = 10;
 
     suite._runBenchmarkIterations(benchmark, runs);
 
@@ -436,8 +437,8 @@ describe('_runBenchmarkIterations', () => {
 
 describe('add', () => {
   it('should add a benchmark to the queue', () => {
-    const name: string = 'name';
-    const fn: Function = () => {};
+    const name = 'name';
+    const fn = () => {};
 
     const suite: BencheeSuite = new BencheeSuite();
 
@@ -449,9 +450,9 @@ describe('add', () => {
   });
 
   it('should add a benchmark to the queue with a group associated', () => {
-    const name: string = 'name';
-    const group: string = 'group';
-    const fn: Function = () => {};
+    const name = 'name';
+    const group = 'group';
+    const fn = () => {};
 
     const suite: BencheeSuite = new BencheeSuite();
 
@@ -465,9 +466,9 @@ describe('add', () => {
   });
 
   it('should add a benchmark to the queue without creating a new group if the group exists', () => {
-    const name: string = 'name';
-    const group: string = 'group';
-    const fn: Function = () => {};
+    const name = 'name';
+    const group = 'group';
+    const fn = () => {};
 
     const suite: BencheeSuite = new BencheeSuite();
 
@@ -482,10 +483,7 @@ describe('add', () => {
     const otherResult = suite.add(name, group, fn);
 
     expect(suite.benchmarks).toEqual({
-      [group]: [
-        createBenchmark(name, group, fn),
-        createBenchmark(name, group, fn),
-      ],
+      [group]: [createBenchmark(name, group, fn), createBenchmark(name, group, fn)],
     });
 
     expect(otherResult).toBe(suite);
@@ -496,8 +494,8 @@ describe('run', () => {
   it('should run all groups and return the results', async () => {
     const suite: BencheeSuite = new BencheeSuite();
 
-    const ungroupedbenchmark = jest.fn();
-    const groupedbenchmark = jest.fn();
+    const ungroupedbenchmark = vi.fn();
+    const groupedbenchmark = vi.fn();
 
     const groupName = 'group';
 
@@ -508,33 +506,29 @@ describe('run', () => {
 
     expect(suite.isRunning).toBe(true);
 
-    const results: Benchee.Results = await promise;
+    const results = await promise;
 
     expect(suite.isRunning).toBe(false);
 
-    expect(results[UNGROUPED_NAME].length).toBe(1);
-    expect(results[groupName].length).toBe(1);
+    expect(results[UNGROUPED_NAME]?.length).toBe(1);
+    expect(results[groupName]?.length).toBe(1);
   });
 
   it('should return a rejected promise if you try to run while running', async () => {
     const suite: BencheeSuite = new BencheeSuite();
 
-    const ungroupedbenchmark = jest.fn();
-    const groupedbenchmark = jest.fn();
+    const ungroupedbenchmark = vi.fn();
+    const groupedbenchmark = vi.fn();
 
     const groupName = 'group';
 
-    let promise;
-
-    promise = suite
+    void suite
       .add('ungrouped benchmark', ungroupedbenchmark)
       .add('grouped benchmark', groupName, groupedbenchmark)
       .run();
 
     expect(suite.isRunning).toBe(true);
 
-    expect(suite.run()).rejects.toEqual(
-      new Error('Benchee is already running.'),
-    );
+    await expect(suite.run()).rejects.toEqual(new Error('Benchee is already running.'));
   });
 });

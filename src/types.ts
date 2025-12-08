@@ -1,64 +1,63 @@
-declare namespace Benchee {
-  export interface DefaultOptions {
-    delay?: number;
-    minIterations?: number;
-    minTime?: number;
-    type?: string;
-  }
+export type BenchmarkFn = () => void;
 
-  export interface Benchmark {
-    fn: Function;
-    group: string;
-    iterations: number;
-    name: string;
-  }
+export interface DefaultOptions {
+  delay?: number;
+  minIterations?: number;
+  minTime?: number;
+  type?: string;
+}
 
-  export interface BenchmarkGroup {
-    [key: string]: Benchmark[];
-  }
+export interface Benchmark<N extends string = string> {
+  fn: BenchmarkFn;
+  group: string;
+  iterations: number;
+  name: N;
+}
 
-  export interface Stats {
-    elapsed: number;
-    endTime: number;
-    iterations: number;
-    ops: number;
-    tpe: number;
-    startTime: number;
-  }
+export type BenchmarkGroup = Record<string, Benchmark[]>;
 
-  export interface Result {
-    error: Error | null;
-    name: string;
-    stats: Stats;
-  }
+export interface Stats {
+  elapsed: number;
+  endTime: number;
+  iterations: number;
+  ops: number;
+  tpe: number;
+  startTime: number;
+}
 
-  export interface ResultsGroup {
-    group: string;
-    results: Result[];
-  }
+export interface Result<N extends string = string> {
+  error: Error | null;
+  name: N;
+  stats: Stats;
+}
 
-  export interface Results {
-    [group: string]: Result[];
-  }
+export interface ResultsGroup<N extends string = string> {
+  group: N;
+  results: Result[];
+}
 
-  export interface Options extends DefaultOptions {
-    onComplete?: (results: Results) => void;
-    onGroupComplete?: (resultGroup: ResultsGroup) => void;
-    onGroupStart?: (group: string) => void;
-    onResult?: (result: Result) => void;
-  }
+export type Results = Record<string, Result[]>;
 
-  export interface BenchmarkOptions {
-    benchmark: Benchmark;
-    endTime?: number;
-    iterations?: number;
-    startTime?: number;
-  }
+interface RunnerOptions {
+  onComplete?: (results: Results) => void;
+  onGroupComplete?: (resultGroup: ResultsGroup) => void;
+  onGroupStart?: (group: string) => void;
+  onResult?: (result: Result) => void;
+}
 
-  export interface BencheeSuite {
-    benchmarks: BenchmarkGroup;
-    isRunning: boolean;
-    options: Options;
-    results: Results;
-  }
+export interface Options extends DefaultOptions, RunnerOptions {}
+export interface NormalizedOptions extends Required<DefaultOptions>, RunnerOptions {}
+
+export interface BenchmarkOptions {
+  benchmark: Benchmark;
+  endTime?: number;
+  iterations?: number;
+  startTime?: number;
+}
+
+export interface BencheeSuite {
+  benchmarks: BenchmarkGroup;
+  isRunning: boolean;
+  options: Options;
+  results: Results;
 }
